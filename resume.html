@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Resume</title>
+    <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+    <h1>Resume</h1>
+    <div class="top-area">
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a current="current"><u>Resume</u></a>
+        <a href="projects.html">Projects</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+    </div>
+    <div class="dark-mode" onclick="darkModeToggle()">Dark Mode</div>
+    </div>
+    <hr>
+    <p>This is my resume section. Below you will find my resume along with a download link. Below the resume are my skills in boxes, if clicked they will show more information.</p>
+    <div class="resume-container">
+        <iframe src="Cooper_Kennedy_Resume.pdf" class="resume-iframe" width="70%" height="800"></iframe>
+        <a href="Cooper_Kennedy_Resume.pdf" download class="download-button">Download Resume</a>
+    </div>
+    <div class="skills-section">
+        <h2>Hard Skills</h2>
+        <div class="skills-list">
+        <div class="skills-boxes" onclick="toggleSkill(this)">Python
+            <p class="hidden-info-skills">: I have well rounded experience in Python, having built several small projects and one large for academic assignments. As for libraries, I have the most extensive experience in the Kivy Library.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">JavaScript
+            <p class="hidden-info-skills">: I have extensive experience in JavaScript, including both frontend and backend development with Node.js. I have built numerous small projects for academic assignments.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Java
+            <p class="hidden-info-skills">: I have experience in Java, having built a project with a team using exclusively Java. In Java I have the most extensive basic testing experience.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">C#
+            <p class="hidden-info-skills">: I have a strong foundational knowledge of C#, having built a personal project using C# and having gotten Foundational C# with Microsoft certification.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">HTML
+            <p class="hidden-info-skills">: I have experiencein HTML, going hand in hand with JavaScript and CSS. I have built several small projects and this personal website using HTML.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">CSS
+            <p class="hidden-info-skills">: I have experiencein CSS, going hand in hand with JavaScript and HTML. I have built several small projects and this personal website using CSS.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">SQL
+            <p class="hidden-info-skills">: I have a bit of experience with SQL, having built a small project using MySQL for persistent data storage.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Git
+            <p class="hidden-info-skills">: I have experience with Git, having used GitHub and GitLab.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">GitHub
+            <p class="hidden-info-skills">: I have experience with GitHub, having used it for version control and collaboration on several projects.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Object-Oriented Programming
+            <p class="hidden-info-skills">: I have a strong understanding of Object-Oriented Programming principles, having applied them in various projects using languages such as Java, C#, and Python. </p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Advanced Data Structures and Algorithms
+            <p class="hidden-info-skills">: I have studied advanced data structures and algorithms as part of my coursework, gaining knowledge in topics such as trees, graphs, sorting algorithms, and algorithmic complexity.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Prompt Engineering
+            <p class="hidden-info-skills">: I have experience in prompt engineering, particularly in designing effective prompts for AI language models to achieve desired outputs.</p>
+        </div>
+         <div class="skills-boxes" onclick="toggleSkill(this)">Software Testing
+            <p class="hidden-info-skills">: I have experience in software testing methodologies, including unit testing, integration testing, and system testing, ensuring the quality and reliability of software applications.</p>
+         </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Persistent Data Storage
+            <p class="hidden-info-skills">: I have experience with persistent data storage techniques, including the use of databases and file systems to store and retrieve data in software applications.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Version Control
+            <p class="hidden-info-skills">: I have experience with version control systems, such as GitHub and GitLab, for managing code changes and collaborating with others on projects.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">VS Code
+            <p class="hidden-info-skills">: I have experience with Visual Studio code, using it mostly for personal projects and for school.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">PyCharm
+            <p class="hidden-info-skills">: I have experience with PyCharm, using it for some minor personal projects and for school.</p>
+        </div>
+        </div>
+        
+        <h2>Soft Skills</h2>
+        <div class="skills-list">
+        <div class="skills-boxes" onclick="toggleSkill(this)">Problem Solving
+            <p class="hidden-info-skills">: I excel at analyzing complex problems, identifying root causes, and developing effective solutions in a timely manner.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Teamwork
+            <p class="hidden-info-skills">: I am a collaborative team player, I'm able to adapt to any team and contribute meaningfully to group objectives.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Communication
+            <p class="hidden-info-skills">: I possess strong verbal and written communication skills, allowing me to effectively convey ideas and information. I always make sure that any problems and misscommunications are addressed promptly.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Critical Thinking
+            <p class="hidden-info-skills">: I have the ability to analyze situations objectively, evaluate evidence, and make informed decisions based on logical reasoning.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Leadership
+            <p class="hidden-info-skills">: I have demonstrated leadership skills through leading projects and teams in my course work. I am able to take the initiative and guide others towards achieving common goals.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Adaptability
+            <p class="hidden-info-skills">: I am flexible and open to change, able to quickly adapt to new situations and environments.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Time Management
+            <p class="hidden-info-skills">: I am skilled at prioritizing tasks, heeding deadlines, and managing time effectively to get all assigned tasks done.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Creativity
+            <p class="hidden-info-skills">: I have a creative mindset, able to think outside the box and come up with "interesting" solutions to problems.</p>
+        </div>
+        <div class="skills-boxes" onclick="toggleSkill(this)">Work Ethic
+            <p class="hidden-info-skills">: I always strive to do my best work, ensuring that any mistake I make is learned from and not repeated. I always finish my tasks and not afraid to ask for help if needed.</p>
+        </div>
+        </div>
+
+
+
+        
+    </div>
+
+
+
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+/* Navigation */
+header {
+    padding: 40px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 40px;
+}
+.nav-links li a {
+    color: var(--text-main);
+    font-size: 0.85rem;
+}
+.nav-links li a:hover { color: var(--accent); }
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    color: var(--accent);
+    font-size: 0.9rem;
+    transition: var(--transition);
+    cursor: none;
+}
+.btn:hover { background: rgba(var(--accent-rgb), 0.1); }
+.main-btn { margin-top: 50px; }
+
+/* Section Headers */
+h3.section-title {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    margin-bottom: 60px;
+    color: var(--text-main);
+}
+h3.section-title::after {
+    content: "";
+    display: block;
+    width: 200px;
+    height: 1px;
+    background: var(--text-muted);
+    margin-left: 20px;
+    opacity: 0.3;
+}
+
+/* Hero */
+#hero { padding-top: 100px; min-height: 80vh; }
+.sub-hero { font-size: 3.5rem; color: var(--text-muted); }
+.hero-text { max-width: 540px; margin-top: 30px; font-size: 1.1rem; color: var(--text-muted); }
+
+/* Project Grid */
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+}
+.project-card {
+    background: var(--bg-light);
+    padding: 2.5rem 2rem;
+    border-radius: 4px;
+    transition: var(--transition);
+    position: relative;
+    top: 0;
+    cursor: default;
+}
+.project-card:hover {
+    /* remove lift/scale to avoid suggesting clickability; keep a subtle shadow */
+    top: 0;
+    transform: none;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+}
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    color: var(--accent);
+}
+.project-card p { font-size: 0.95rem; color: var(--text-muted); }
+.tech-stack-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 25px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.project-meta { color: var(--text-muted); font-size: 0.85rem; margin-top: 6px; }
+.project-highlights { margin-top: 14px; color: var(--text-muted); }
+.project-highlights li { margin-bottom: 6px; font-size: 0.92rem; }
+.tech-tag { background: rgba(var(--accent-rgb), 0.06); padding: 6px 8px; border-radius: 4px; color: var(--text-main); font-size: 0.8rem; margin-right: 8px; display: inline-block; }
+
+/* Project title and card polish */
+.project-card h3 { font-size: 1.25rem; margin: 10px 0 6px 0; color: var(--text-main); }
+.project-meta { font-style: italic; }
+
+/* Skills */
+.skills-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(150px, 250px));
+    gap: 20px;
+    list-style: none;
+    color: var(--text-muted);
+}
+.skills-list li::before {
+    content: "▹";
+    color: var(--accent);
+    margin-right: 15px;
+}
+
+/* Skill badges */
+.skill-badge { margin-left: 10px; padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; vertical-align: middle; }
+.skill-level-proficient { background: rgba(var(--accent-rgb), 0.12); color: var(--accent); border: 1px solid rgba(var(--accent-rgb), 0.18); }
+.skill-level-familiar { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.03); }
+
+/* Footer & Contact */
+.contact-heading { font-size: 3rem; }
+.contact-text { max-width: 600px; margin: 0 auto 40px auto; color: var(--text-muted); }
+footer { padding: 40px; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
+
+/* --- CURSOR AND TRAIL --- */
+/* Trail container sits below the cursor */
+#cursor-trail-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+}
+.trail-particle {
+    position: absolute;
+    width: 6px; height: 6px;
+    background-color: rgba(var(--accent-rgb), 1);
+    border-radius: 50%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    animation: fadeDrift 0.6s forwards ease-out;
+    filter: drop-shadow(0 0 3px rgba(var(--accent-rgb), 0.8));
+}
+
+/* Custom cursor - simple circle */
+#custom-cursor {
+    position: fixed;
+    width: 16px;
+    height: 16px;
+    background: rgba(var(--accent-rgb), 0.4);
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    margin: -8px 0 0 -8px;
+    opacity: 0;
+    box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5);
+}
+
+/* Slightly larger on interactive hover */
+#custom-cursor.cursor-hover {
+    width: 24px;
+    height: 24px;
+    background: rgba(var(--accent-rgb), 0.2);
+    box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.8);
+    margin: -12px 0 0 -12px;
+}
+
+/* Smaller on click */
+#custom-cursor.cursor-active {
+    width: 12px;
+    height: 12px;
+    background: rgba(var(--accent-rgb), 0.6);
+    box-shadow: 0 0 10px rgba(var(--accent-rgb), 1);
+    margin: -6px 0 0 -6px;
+}
+
+@keyframes fadeDrift {
+    0% {
+        opacity: 1;
+        transform: scale(1) translate(0, 0);
+        filter: drop-shadow(0 0 4px rgba(var(--accent-rgb), 1));
+    }
+    40% {
+        opacity: 0.8;
+        filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.9));
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.2) translate(0, 16px);
+        filter: drop-shadow(0 0 2px rgba(var(--accent-rgb), 0));
+    }
+}
+
+/* Show the system cursor alongside the custom circle cursor */
+body {
+    cursor: auto !important;
+}
+
+/* Ensure interactive elements display the pointer hand */
+a, button, .btn {
+    cursor: pointer !important;
+}

@@ -1,0 +1,70 @@
+/* 1. Infinite Perspective Grid */
+.perspective-grid {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    /* Grid lines using accent color with very low opacity */
+    background-image: 
+        linear-gradient(rgba(var(--accent-rgb), 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--accent-rgb), 0.07) 1px, transparent 1px);
+    background-size: 50px 50px;
+    /* The 3D Tilt */
+    transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+    z-index: -2;
+    animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+    0% { transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px); }
+    100% { transform: perspective(500px) rotateX(60deg) translateY(50px) translateZ(-200px); }
+}
+
+/* 2. Vignette (Fades grid edges into darkness) */
+.vignette {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle, transparent 40%, var(--bg-dark) 90%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* 3. Glitch Text Effect */
+.glitch {
+    position: relative;
+    font-size: 4.5rem; /* Increased size */
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -2px;
+}
+.glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-dark); /* IMPORTANT: Matches body bg to hide underlying text */
+}
+.glitch::before {
+    left: 2px; text-shadow: -2px 0 #ff00c1;
+    clip-path: inset(0 0 0 0);
+    animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+.glitch::after {
+    left: -2px; text-shadow: -2px 0 #00fff9;
+    clip-path: inset(0 0 0 0);
+    animation: glitch-anim 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+    0% { clip-path: inset(80% 0 2% 0); }
+    20% { clip-path: inset(20% 0 60% 0); }
+    40% { clip-path: inset(50% 0 10% 0); }
+    60% { clip-path: inset(10% 0 80% 0); }
+    80% { clip-path: inset(90% 0 5% 0); }
+    100% { clip-path: inset(30% 0 40% 0); }
+}
+@keyframes glitch-anim-2 {
+    0% { clip-path: inset(10% 0 60% 0); }
+    20% { clip-path: inset(80% 0 5% 0); }
+    40% { clip-path: inset(30% 0 20% 0); }
+    60% { clip-path: inset(70% 0 10% 0); }
+    80% { clip-path: inset(20% 0 50% 0); }
+    100% { clip-path: inset(60% 0 15% 0); }
+}

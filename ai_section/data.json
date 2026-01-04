@@ -1,0 +1,59 @@
+{
+    "projects": [
+        {
+            "title": "BurnPlan",
+            "description": "Course project that calculates fire risk using prescribed burning rules and live weather data.",
+            "role": "Team Lead",
+            "year": 2024,
+            "tech": ["Java", "OpenWeatherAPI", "JUnit", "GitLab"],
+            "highlights": [
+                "Realtime weather ingestion and normalization",
+                "Rule-based risk scoring aligned with Tennessee procedures",
+                "Comprehensive unit and system tests (100% coverage)",
+                "Collaborative workflow using GitLab with issue tracking"
+            ],
+            "link": "#"
+        },
+        {
+            "title": "CryptoApp",
+            "description": "A desktop application for tracking cryptocurrency prices, alerts, and portfolio performance.",
+            "role": "Developer",
+            "year": 2024,
+            "tech": ["Python", "Kivy", "MySQL", "CoinGecko API"],
+            "highlights": [
+                "Historical price charts and lightweight visualizations",
+                "Custom price alerts and local notifications",
+                "Persistent portfolio storage with MySQL and profile support",
+                "Tested with unit and integration tests"
+            ],
+            "link": "#"
+        },
+        {
+            "title": "Personal Website",
+            "description": "My public portfolio and resume, a static site showcasing projects and technical writeups.",
+            "role": "Designer & Developer",
+            "year": 2025,
+            "tech": ["HTML", "CSS", "JavaScript"],
+            "highlights": [
+                "Responsive layout and simple static hosting",
+                "Data-driven AI section that renders projects from JSON",
+                "Accessible markup and lightweight JS with no build step"
+            ],
+            "link": "../index.html"
+        }
+    ],
+    "skills": [
+        { "name": "JavaScript", "level": "Proficient" },
+        { "name": "Python", "level": "Proficient" },
+        { "name": "Java", "level": "Proficient" },
+        { "name": "C#", "level": "Familiar" },
+        { "name": "HTML", "level": "Proficient" },
+        { "name": "CSS", "level": "Proficient" },
+        { "name": "SQL", "level": "Familiar" },
+        { "name": "Git", "level": "Proficient" },
+        { "name": "Testing & QA", "level": "Proficient" },
+        { "name": "Data Structures & Algorithms", "level": "Proficient" },
+        { "name": "Kivy", "level": "Familiar" },
+        { "name": "MySQL", "level": "Familiar" }
+    ]
+}

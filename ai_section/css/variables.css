@@ -1,0 +1,17 @@
+:root {
+    /* Deep Navy Background */
+    --bg-dark: #0B1221;
+    --bg-light: #131B2D;
+    
+    /* High Contrast Text */
+    --text-main: #E6F1FF;
+    --text-muted: #A8B2D1;
+    
+    /* Neon Cyan Accent */
+    --accent: #64ffda;
+    --accent-rgb: 100, 255, 218; /* Used for transparent calculations */
+    
+    --font-mono: 'JetBrains Mono', monospace;
+    --easing: cubic-bezier(0.645, 0.045, 0.355, 1);
+    --transition: all 0.25s var(--easing);
+}

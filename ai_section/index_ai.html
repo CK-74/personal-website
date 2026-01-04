@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooper Kennedy - AI Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/gloabal.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div class="perspective-grid"></div>
+    <div class="vignette"></div>
+    <div id="cursor-trail-container"></div>
+    <div id="custom-cursor" aria-hidden="true"></div>
+
+    <header>
+        <nav class="container">
+            <div class="logo" style="font-weight:700; font-size:1.2rem; color:var(--accent);">&lt;Cooper/&gt;</div>
+            <ul class="nav-links">
+                <li><a href="index_ai.html">Home</a></li>
+                <li><a href="resume_ai.html">Resume</a></li>
+                <li><a href="projects_ai.html">Projects</a></li>
+                <li><a href="about_ai.html">About</a></li>
+                <li><a href="contact_ai.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section id="hero">
+            <h4 class="accent">Hi, my name is</h4>
+            <h1 class="glitch" data-text="Cooper Kennedy.">Cooper Kennedy.</h1>
+            <h2 class="sub-hero">A Software Engineer passionate about building intelligent systems.</h2>
+            <p class="hero-text">
+                I'm studying Software Engineering at the University of Nebraska-Lincoln with a minor in Mathematics and AI. I specialize in building full-stack applications, algorithmic solutions, and AI-powered features. Explore my projects below to see what I've created.
+            </p>
+            <a href="../contact.html" class="btn main-btn\">Get In Touch</a>
+        </section>
+
+        <section id="projects">
+            <h3 class="section-title">Some Things I've Built</h3>
+            <div class="project-grid" id="project-list"></div>
+        </section>
+
+        <section id="skills">
+            <h3 class="section-title">Tech Stack</h3>
+            <div class="skills-wrapper">
+                <ul class="skills-list" id="skills-list"></ul>
+            </div>
+        </section>
+
+        <section id="contact" class="text-center">
+            <h3 class="section-title" style="justify-content: center; margin-bottom: 20px;">What's Next?</h3>
+            <h1 class="contact-heading">Get In Touch</h1>
+            <p class="contact-text">Whether you have a question or just want to say hi, feel free to reach out.</p>
+            <a href="../contact.html" class="btn">Say Hello</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>Designed & Built by Cooper Kennedy</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

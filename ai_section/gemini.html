@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooper Kennedy | Software Engineer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Space Grotesk"', 'sans-serif'],
+                        display: ['"Syncopate"', 'sans-serif'],
+                        mono: ['"Share Tech Mono"', 'monospace'],
+                    },
+                    colors: {
+                        glass: 'rgba(255, 255, 255, 0.03)',
+                        glassBorder: 'rgba(255, 255, 255, 0.05)',
+                        accent: '#00f0ff',
+                        accentRed: '#ff2a6d',
+                        darkBg: '#020202',
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- CORE SETUP --- */
+        body {
+            background-color: #020202;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            cursor: none; /* Hide default cursor */
+        }
+
+        /* --- CRT OVERLAY EFFECTS --- */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.6;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        /* --- ADVANCED HUD CURSOR --- */
+        #cursor-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            /* Removed transition here for instant JS response */
+        }
+
+        #cursor-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background-color: #00f0ff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px #00f0ff;
+            transition: all 0.2s ease;
+        }
+
+        #cursor-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            border: 1px dashed rgba(0, 240, 255, 0.5);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            /* ... */
+            /* Removed transition: all 0.3s ease; from ring to make it snappy, kept mainly for color/size */
+        }
+
+        #cursor-brackets {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            transform: translate(-50%, -50%);
+            transition: width 0.1s ease-out, height 0.1s ease-out, opacity 0.2s; /* Faster bracket response */
+        }
+
+        .corner {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-color: #00f0ff;
+            border-style: solid;
+            transition: all 0.2s ease;
+        }
+        .tl { top: 0; left: 0; border-width: 2px 0 0 2px; }
+        .tr { top: 0; right: 0; border-width: 2px 2px 0 0; }
+        .bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+        .br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+        /* Cursor Hover State (Target Lock) */
+        body.hovering #cursor-dot { background-color: #ff2a6d; box-shadow: 0 0 15px #ff2a6d; transform: translate(-50%, -50%) scale(1.5); }
+        body.hovering #cursor-ring { border-color: #ff2a6d; width: 60px; height: 60px; animation-duration: 2s; }
+        body.hovering .corner { border-color: #ff2a6d; }
+        body.hovering #cursor-brackets { width: 30px; height: 30px; } /* Snap brackets in */
+
+        /* Cursor Moving Fast State (Expanded) */
+        body.moving-fast #cursor-brackets { width: 70px; height: 70px; opacity: 0.5; }
+
+        /* Cursor Clicking State (Charge) */
+        body.clicking #cursor-dot {
+            transform: translate(-50%, -50%) scale(0.5);
+            background-color: #ffffff;
+            box-shadow: 0 0 25px #ffffff;
+        }
+        body.clicking #cursor-ring {
+            width: 20px;
+            height: 20px;
+            border-color: #ffffff;
+            border-style: solid;
+            animation-duration: 0.2s; /* Super fast spin */
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        body.clicking #cursor-brackets {
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+
+        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* --- GLASS & CARDS --- */
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        .glass-card {
+            background: rgba(20, 20, 25, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 240, 255, 0.1);
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Scan Beam Effect on Card Hover */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(0, 240, 255, 0.2), transparent);
+            transform: skewX(-25deg);
+            transition: none;
+            pointer-events: none;
+        }
+        .glass-card:hover::before {
+            animation: scan-beam 0.8s ease-in-out;
+        }
+
+        @keyframes scan-beam {
+            0% { left: -100%; opacity: 0; }
+            50% { opacity: 1; }
+            100% { left: 200%; opacity: 0; }
+        }
+
+        .card-content { transform: translateZ(30px); }
+
+        /* --- TEXT GLITCH --- */
+        .glitch-wrapper { position: relative; display: inline-block; }
+        .glitch-wrapper::before, .glitch-wrapper::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #020202;
+            opacity: 0.8;
+            display: none;
+        }
+        .glitch-active::before {
+            display: block;
+            left: 2px;
+            text-shadow: -1px 0 #ff00c1;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+            animation: glitch-anim-1 0.1s infinite linear alternate-reverse;
+        }
+        .glitch-active::after {
+            display: block;
+            left: -2px;
+            text-shadow: -1px 0 #00fff9;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+            animation: glitch-anim-2 0.1s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 { 0% { clip-path: inset(20% 0 80% 0); } 100% { clip-path: inset(60% 0 10% 0); } }
+        @keyframes glitch-anim-2 { 0% { clip-path: inset(10% 0 60% 0); } 100% { clip-path: inset(80% 0 5% 0); } }
+
+        /* --- UTILITIES --- */
+        .nav-link.active { color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.8); }
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        .ai-glow { box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); animation: pulse-glow 3s infinite; }
+        @keyframes pulse-glow { 50% { box-shadow: 0 0 30px rgba(0, 240, 255, 0.6); } }
+
+        .typing-dot { animation: typing 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- CRT Overlay -->
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <!-- Advanced HUD Cursor -->
+    <div id="cursor-container">
+        <div id="cursor-dot"></div>
+        <div id="cursor-ring"></div>
+        <div id="cursor-brackets">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+        </div>
+    </div>
+
+    <!-- 3D Background Canvas -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10"></canvas>
+
+    <!-- Floating Navigation -->
+    <nav class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm md:max-w-md px-4">
+        <div class="glass-panel px-6 py-4 rounded-full flex justify-between items-center w-full shadow-[0_0_30px_rgba(0,0,0,0.8)] border border-accent/20">
+            <a href="#home" class="nav-link text-xs md:text-sm font-mono tracking-widest hover:text-accent transition-colors cursor-hover" data-section="home">HOME</a>
+            <a href="#work" class="nav-link text-xs md:text-sm font-mono tracking-widest hover:text-accent transition-colors cursor-hover" data-section="work">WORK</a>
+            <a href="#about" class="nav-link text-xs md:text-sm font-mono tracking-widest hover:text-accent transition-colors cursor-hover" data-section="about">ABOUT</a>
+            <a href="#contact" class="nav-link text-xs md:text-sm font-mono tracking-widest hover:text-accent transition-colors cursor-hover" data-section="contact">CONTACT</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 container mx-auto px-6 md:px-12 lg:px-20 pb-32">
+        
+        <!-- HOME -->
+        <section id="home" class="min-h-screen flex flex-col justify-center items-start pt-20">
+            <div class="space-y-6 relative pl-8 border-l border-white/10">
+                <p class="text-accent tracking-[0.2em] uppercase text-sm reveal font-mono flex items-center">
+                    <span class="w-2 h-2 bg-accent mr-3 animate-pulse"></span>System Online
+                </p>
+                <div class="glitch-wrapper reveal delay-100" id="main-title" data-text="COOPER KENNEDY_">
+                    <h1 class="text-6xl md:text-9xl font-display font-bold leading-none text-white tracking-tighter cursor-hover">
+                        COOPER<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-400 to-gray-800">KENNEDY_</span>
+                    </h1>
+                </div>
+                <div class="max-w-xl glass-panel p-6 rounded-none border-l-4 border-accent reveal delay-200">
+                    <p class="text-gray-400 text-lg leading-relaxed font-mono">
+                        > Software Engineer<br>
+                        > Full Stack Developer<br>
+                        > Building Intelligent Systems
+                    </p>
+                </div>
+                <div class="reveal delay-300 pt-6">
+                     <a href="#work" class="cursor-hover group inline-flex items-center space-x-4 text-white border border-white/20 px-8 py-4 hover:bg-white/5 transition-all hover:border-accent/50">
+                        <span class="font-mono text-sm tracking-widest">INITIALIZE_PROJECTS</span>
+                        <i class="fas fa-arrow-down transform group-hover:translate-y-1 transition-transform text-accent"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- WORK -->
+        <section id="work" class="min-h-screen py-24">
+            <div class="flex items-end justify-between mb-16 reveal border-b border-white/10 pb-4">
+                <h2 class="text-4xl md:text-6xl font-display font-bold text-white">SELECTED<br><span class="text-gray-600">PROJECTS</span></h2>
+                <span class="hidden md:block text-accent font-mono">01 // ARCHIVE_ACCESS</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 perspective-container">
+                <!-- Project 1 -->
+                <article class="glass-card p-8 reveal group tilt-card cursor-hover rounded-xl">
+                    <div class="card-content">
+                        <div class="flex justify-between items-start mb-8">
+                            <i class="fas fa-cube text-3xl text-accent"></i>
+                            <button onclick="analyzeProject('BurnPlan', 'Fire risk calculation system', this)" class="cursor-hover text-xs font-mono text-accent border border-accent/30 px-3 py-1 hover:bg-accent/10 transition-colors flex items-center gap-2">
+                                <i class="fas fa-microchip"></i> ANALYZE
+                            </button>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-2 font-display text-white group-hover:text-accent transition-colors">BurnPlan</h3>
+                        <p class="text-gray-400 mb-6 font-mono text-sm leading-relaxed">Fire risk calculation using prescribed burning rules and real-time weather data. 100% test coverage.</p>
+                        <div class="flex flex-wrap gap-2 font-mono text-xs text-gray-500">
+                            <span class="px-2 py-1 bg-white/5 border border-white/5">Java</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/5">OpenWeatherAPI</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/5">JUnit</span>
+                        </div>
+                        <div class="ai-output hidden mt-4 pt-4 border-t border-white/10 text-xs font-mono text-accent/80 bg-black/40 p-3 backdrop-blur-sm"></div>
+                    </div>
+                </article>
+
+                <!-- Project 2 -->
+                <article class="glass-card p-8 reveal delay-100 group tilt-card cursor-hover rounded-xl md:mt-16">
+                    <div class="card-content">
+                        <div class="flex justify-between items-start mb-8">
+                            <i class="fas fa-fingerprint text-3xl text-accent"></i>
+                            <button onclick="analyzeProject('CryptoApp', 'Portfolio tracker with alerts', this)" class="cursor-hover text-xs font-mono text-accent border border-accent/30 px-3 py-1 hover:bg-accent/10 transition-colors flex items-center gap-2">
+                                <i class="fas fa-microchip"></i> ANALYZE
+                            </button>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-2 font-display text-white group-hover:text-accent transition-colors">CryptoApp</h3>
+                        <p class="text-gray-400 mb-6 font-mono text-sm leading-relaxed">Desktop app for tracking crypto prices, alerts, and portfolio performance with persistent storage.</p>
+                        <div class="flex flex-wrap gap-2 font-mono text-xs text-gray-500">
+                            <span class="px-2 py-1 bg-white/5 border border-white/5">Python</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/5">Kivy</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/5">MySQL</span>
+                        </div>
+                        <div class="ai-output hidden mt-4 pt-4 border-t border-white/10 text-xs font-mono text-accent/80 bg-black/40 p-3 backdrop-blur-sm"></div>
+                    </div>
+                </article>
+
+                 <!-- Project 3 -->
+                <article class="glass-card p-8 reveal group tilt-card cursor-hover rounded-xl">
+                    <div class="card-content">
+                        <div class="flex justify-between items-start mb-8">
+                            <i class="fas fa-wave-square text-3xl text-accent"></i>
+                            <button onclick="analyzeProject('Personal Website', 'Portfolio & AI showcase', this)" class="cursor-hover text-xs font-mono text-accent border border-accent/30 px-3 py-1 hover:bg-accent/10 transition-colors flex items-center gap-2">
+                                <i class="fas fa-microchip"></i> ANALYZE
+                            </button>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-2 font-display text-white group-hover:text-accent transition-colors">Personal Website</h3>
+                        <p class="text-gray-400 mb-6 font-mono text-sm leading-relaxed">Full-stack portfolio showcasing projects with responsive design and data-driven AI section.</p>
+                        <div class="flex flex-wrap gap-2 font-mono text-xs text-gray-500">
+                            <span class="px-2 py-1 bg-white/5 border border-white/5">HTML</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/5">CSS</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/5">JavaScript</span>
+                        </div>
+                        <div class="ai-output hidden mt-4 pt-4 border-t border-white/10 text-xs font-mono text-accent/80 bg-black/40 p-3 backdrop-blur-sm"></div>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- ABOUT -->
+        <section id="about" class="min-h-screen py-24 flex items-center">
+            <div class="grid md:grid-cols-2 gap-20 items-center">
+                <div class="order-2 md:order-1 reveal tilt-card">
+                    <div class="relative card-content">
+                         <div class="glass-panel p-10 rounded-xl relative border border-white/10">
+                            <h3 class="text-2xl font-bold mb-8 text-white font-display border-b border-white/10 pb-4">TECH_STACK</h3>
+                            <div class="grid grid-cols-2 gap-6 text-sm font-mono text-gray-400">
+                                <div class="space-y-3">
+                                    <div class="flex items-center group cursor-hover"><i class="fas fa-caret-right text-accent mr-3"></i> JavaScript</div>
+                                    <div class="flex items-center group cursor-hover"><i class="fas fa-caret-right text-accent mr-3"></i> Python</div>
+                                    <div class="flex items-center group cursor-hover"><i class="fas fa-caret-right text-accent mr-3"></i> Java</div>
+                                    <div class="flex items-center group cursor-hover"><i class="fas fa-caret-right text-accent mr-3"></i> HTML / CSS</div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center group cursor-hover"><i class="fas fa-caret-right text-accentRed mr-3"></i> Git / GitHub</div>
+                                    <div class="flex items-center group cursor-hover"><i class="fas fa-caret-right text-accentRed mr-3"></i> MySQL / SQL</div>
+                                    <div class="flex items-center group cursor-hover"><i class="fas fa-caret-right text-accentRed mr-3"></i> Testing & QA</div>
+                                    <div class="flex items-center group cursor-hover"><i class="fas fa-caret-right text-accentRed mr-3"></i> Kivy / C#</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-1 md:order-2 reveal">
+                    <span class="text-accent font-mono text-sm mb-4 block">02 // IDENTITY</span>
+                    <h2 class="text-5xl md:text-6xl font-display font-bold mb-8 text-white">BEHIND<br>THE CODE</h2>
+                    <p class="text-gray-400 leading-relaxed text-lg mb-6 font-light">
+                        "I build full-stack solutions at the intersection of algorithms and elegant design."
+                    </p>
+                    <p class="text-gray-400 leading-relaxed font-mono text-sm">
+                        CURRENT_STATUS: Software Engineering student at <span class="text-white border-b border-accent">University of Nebraska-Lincoln</span>.<br>
+                        FOCUS: Full-stack development, AI integration, and algorithmic problem-solving.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact" class="min-h-[80vh] flex flex-col justify-center items-center text-center py-24">
+            <div class="reveal">
+                <span class="text-gray-500 font-mono text-sm mb-6 block tracking-widest">03 // FINAL_TRANSMISSION</span>
+                <h2 class="text-6xl md:text-8xl font-display font-bold mb-10 text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-900 cursor-hover hover:text-white transition-colors">
+                    LET'S<br>CONNECT
+                </h2>
+                
+                <button onclick="location.href='../contact.html'" class="cursor-hover group relative px-10 py-5 bg-transparent border border-gray-600 overflow-hidden transition-all hover:border-accent">
+                    <span class="relative z-10 font-mono text-sm tracking-[0.3em] group-hover:text-black transition-colors font-bold">SEND_MESSAGE</span>
+                    <div class="absolute inset-0 bg-accent transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out"></div>
+                </button>
+                <div id="copy-feedback" class="mt-6 text-xs font-mono text-accent opacity-0 transition-opacity">>> EMAIL_COPIED_TO_CLIPBOARD</div>
+            </div>
+        </section>
+
+        <footer class="py-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-xs font-mono text-gray-600">
+            <div>PORTFOLIO_v1.0 // COOPER KENNEDY</div>
+            <div class="flex space-x-8 mt-4 md:mt-0">
+                <a href="../index.html" class="hover:text-accent transition-colors cursor-hover">MAIN_SITE</a>
+                <a href="../contact.html" class="hover:text-accent transition-colors cursor-hover">CONTACT</a>
+                <a href="../projects.html" class="hover:text-accent transition-colors cursor-hover">PROJECTS</a>
+            </div>
+        </footer>
+    </main>
+
+    <!-- LOGIC CORE -->
+    <script>
+        /* --- CONFIG --- */
+        // NOTE: Do NOT store API keys in client-side code. Configure a server-side
+        // proxy (e.g. /api/generate) that holds the real key in environment variables.
+
+        /* --- 3D SCENE (ENHANCED) --- */
+        class CyberScene {
+            constructor() {
+                this.canvas = document.querySelector('#bg-canvas');
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, alpha: true, antialias: true });
+                this.time = 0;
+                this.warpFactor = 0;
+                this.init();
+                this.animate();
+            }
+
+            init() {
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+                // 1. Core (Breathing Icosahedron)
+                const geometry = new THREE.IcosahedronGeometry(8, 2);
+                const material = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.15 });
+                this.core = new THREE.Mesh(geometry, material);
+                this.scene.add(this.core);
+
+                // 2. Gyroscope Ring
+                const ringGeo = new THREE.TorusGeometry(14, 0.1, 16, 100);
+                const ringMat = new THREE.MeshBasicMaterial({ color: 0xff2a6d, transparent: true, opacity: 0.3 });
+                this.ring = new THREE.Mesh(ringGeo, ringMat);
+                this.scene.add(this.ring);
+
+                // 3. Starfield (Data Dust) - Reduced particle count for performance
+                const particlesGeometry = new THREE.BufferGeometry();
+                const particlesCount = 1200; // Decreased from 2000
+                const posArray = new Float32Array(particlesCount * 3);
+                for(let i = 0; i < particlesCount * 3; i++) {
+                    posArray[i] = (Math.random() - 0.5) * 80;
+                }
+                particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+                const particlesMaterial = new THREE.PointsMaterial({ size: 0.03, color: 0x00f0ff, transparent: true, opacity: 0.6 });
+                this.stars = new THREE.Points(particlesGeometry, particlesMaterial);
+                this.scene.add(this.stars);
+
+                this.camera.position.z = 30;
+
+                window.addEventListener('resize', () => {
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+
+                this.mouseX = 0; this.mouseY = 0;
+                window.addEventListener('mousemove', (e) => {
+                    this.mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+                    this.mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+                });
+            }
+
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                this.time += 0.01;
+
+                // Check click state for Warp Effect
+                const isClicking = document.body.classList.contains('clicking');
+                const targetWarp = isClicking ? 1 : 0;
+                this.warpFactor = THREE.MathUtils.lerp(this.warpFactor, targetWarp, 0.05);
+
+                // Calculate Speed & Zoom based on Warp Factor
+                const speedMult = 1 + (this.warpFactor * 8); // Speed up 8x
+                
+                // Core Breathing & Distortion
+                const scale = 1 + Math.sin(this.time * speedMult) * 0.05;
+                this.core.scale.set(scale, scale, scale);
+                
+                this.core.rotation.y += 0.003 * speedMult;
+                this.core.rotation.x += 0.001 * speedMult;
+
+                // Ring Physics
+                this.ring.rotation.x += 0.01 * speedMult;
+                this.ring.rotation.y += 0.01 * speedMult;
+
+                // Camera Zoom (Warp In)
+                // Default Z is 30. Warp pulls to 15.
+                this.camera.position.z = 30 - (this.warpFactor * 15);
+
+                // Mouse Interaction (Dampen tilt when warping to center focus)
+                const mouseInfluence = 1 - this.warpFactor;
+                this.scene.rotation.y = THREE.MathUtils.lerp(this.scene.rotation.y, this.mouseX * 0.2 * mouseInfluence, 0.05);
+                this.scene.rotation.x = THREE.MathUtils.lerp(this.scene.rotation.x, this.mouseY * 0.2 * mouseInfluence, 0.05);
+
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+
+        /* --- HUD CURSOR SYSTEM --- */
+        class HUDCursor {
+            constructor() {
+                this.container = document.getElementById('cursor-container');
+                this.pos = { x: window.innerWidth/2, y: window.innerHeight/2 };
+                this.mouse = { x: this.pos.x, y: this.pos.y };
+                this.vel = { x: 0, y: 0 };
+                this.fastState = false; // Add state tracker to avoid DOM trashing
+                this.init();
+            }
+
+            init() {
+                window.addEventListener('mousemove', (e) => { this.mouse.x = e.clientX; this.mouse.y = e.clientY; });
+                
+                // Mouse Click (Charge) States
+                window.addEventListener('mousedown', () => document.body.classList.add('clicking'));
+                window.addEventListener('mouseup', () => document.body.classList.remove('clicking'));
+
+                // Hover States
+                document.querySelectorAll('.cursor-hover, a, button').forEach(el => {
+                    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+                    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+                });
+
+                this.loop();
+            }
+
+            loop() {
+                // Smooth Follow with lerp - Increased dt from 0.15 to 0.4 for snappier response
+                const dt = 0.4;
+                this.pos.x += (this.mouse.x - this.pos.x) * dt;
+                this.pos.y += (this.mouse.y - this.pos.y) * dt;
+
+                // Calculate Velocity for dynamic bracket expansion
+                this.vel.x = this.mouse.x - this.pos.x;
+                this.vel.y = this.mouse.y - this.pos.y;
+                const speed = Math.sqrt(this.vel.x**2 + this.vel.y**2);
+
+                // Only update DOM if state changes (Performance Fix)
+                if (speed > 5 && !this.fastState) {
+                    document.body.classList.add('moving-fast');
+                    this.fastState = true;
+                } else if (speed <= 5 && this.fastState) {
+                    document.body.classList.remove('moving-fast');
+                    this.fastState = false;
+                }
+
+                this.container.style.transform = `translate(${this.pos.x}px, ${this.pos.y}px) translate(-50%, -50%)`;
+                requestAnimationFrame(() => this.loop());
+            }
+        }
+
+        /* --- GLITCH TYPOGRAPHY --- */
+        function autoGlitch() {
+            const title = document.getElementById('main-title');
+            if(!title) return;
+            
+            // Randomly trigger glitch every 2-5 seconds
+            const randomDelay = Math.random() * 3000 + 2000;
+            
+            setTimeout(() => {
+                title.classList.add('glitch-active');
+                setTimeout(() => {
+                    title.classList.remove('glitch-active');
+                    autoGlitch();
+                }, 200); // Glitch duration
+            }, randomDelay);
+        }
+
+        /* --- TILT EFFECT --- */
+        function initTilt() {
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                let rect;
+
+                // Performance Fix: Cache rect on enter, don't recalc on every move
+                card.addEventListener('mouseenter', () => {
+                    rect = card.getBoundingClientRect();
+                });
+
+                card.addEventListener('mousemove', (e) => {
+                    if (!rect) return;
+                    // Calculate relative to cached rect
+                    const x = e.clientX - rect.left - rect.width/2;
+                    const y = e.clientY - rect.top - rect.height/2;
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${y * -0.01}deg) rotateY(${x * 0.01}deg)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+                    rect = null;
+                });
+            });
+        }
+
+        /* --- UI & AI LOGIC --- */
+        class UIManager {
+            constructor() {
+                this.initScroll();
+            }
+
+            initScroll() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(e => {
+                        if(e.isIntersecting) {
+                            e.target.classList.add('active');
+                            // Update nav
+                            const id = e.target.getAttribute('id');
+                            document.querySelectorAll('.nav-link').forEach(l => {
+                                l.classList.toggle('active', l.dataset.section === id);
+                            });
+                        }
+                    });
+                }, { threshold: 0.2 });
+                document.querySelectorAll('section, .reveal').forEach(el => observer.observe(el));
+            }
+        }
+
+        /* --- AI hooks removed (Gemini/Proxy not used) --- */
+
+        /* --- GLOBAL FUNCTIONS --- */
+        function copyEmail(email) {
+            navigator.clipboard.writeText(email);
+            const feedback = document.getElementById('copy-feedback');
+            feedback.classList.remove('opacity-0');
+            setTimeout(() => feedback.classList.add('opacity-0'), 2000);
+        }
+
+        async function analyzeProject(title, desc, btn) {
+            const output = btn.closest('.card-content').querySelector('.ai-output');
+            output.classList.remove('hidden');
+            // Show loading indicator (use DOM methods to avoid injecting HTML)
+            output.textContent = '';
+            const loading = document.createElement('span');
+            loading.className = 'animate-pulse';
+            loading.textContent = 'ACCESSING_NEURAL_DB...';
+            output.appendChild(loading);
+            await new Promise(r => setTimeout(r, 1500));
+            // Replace with safe text nodes
+            output.textContent = '';
+            const analysis = document.createElement('div');
+            analysis.textContent = `>> ANALYSIS: ${title} utilizes advanced algorithms.`;
+            const verdict = document.createElement('div');
+            verdict.textContent = '>>> VERDICT: High-value asset.';
+            output.appendChild(analysis);
+            output.appendChild(verdict);
+        }
+
+        /* --- INIT --- */
+        window.addEventListener('DOMContentLoaded', () => {
+            new CyberScene();
+            new HUDCursor();
+            new UIManager();
+            initTilt();
+            autoGlitch();
+        });
+    </script>
+</body>
+</html>
