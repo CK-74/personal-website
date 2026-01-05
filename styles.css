@@ -71,7 +71,10 @@ h4{
     font-size: 17px
 }
 .navbar a:hover{
-    color: aqua;
+    color: blue;
+}
+body.dark-mode-toggle a:hover{
+    color:aqua;
 }
 .dark-mode{
     float: left;
@@ -101,10 +104,18 @@ h4{
     padding: 10px;
     margin: 1px;
     text-decoration: none;
+    border-color: black;
 }
 .about-ai-button:hover{
     background-color: lightgray;
     cursor: pointer;
+    color:blue;
+}
+body.dark-mode-toggle .about-ai-button:hover{
+    color:aqua;
+    background-color: gray;
+    border-color: white;
+
 }
 .resume-container {
     justify-content: center;
